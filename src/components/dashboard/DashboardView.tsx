@@ -10,43 +10,6 @@ interface DashboardViewProps {
 export default function DashboardView({ activeAlarms, onAcknowledge }: DashboardViewProps) {
   return (
     <div className="space-y-6">
-      {/* Status Cards */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="bg-card p-4 rounded-lg border border-border flex items-center justify-between">
-          <div>
-            <p className="text-muted-foreground text-sm">Estado Sistema</p>
-            <p className="text-success text-2xl font-bold">OPERANDO</p>
-          </div>
-          <Activity className="text-success h-8 w-8" />
-        </div>
-
-        <div
-          className={`bg-card p-4 rounded-lg border ${
-            activeAlarms.length > 0 ? 'border-critical animate-pulse' : 'border-border'
-          } flex items-center justify-between`}
-        >
-          <div>
-            <p className="text-muted-foreground text-sm">Alarmas Activas</p>
-            <p
-              className={`text-2xl font-bold ${
-                activeAlarms.length > 0 ? 'text-critical' : 'text-foreground'
-              }`}
-            >
-              {activeAlarms.length}
-            </p>
-          </div>
-          <Bell className={activeAlarms.length > 0 ? 'text-critical h-8 w-8' : 'text-muted h-8 w-8'} />
-        </div>
-
-        <div className="bg-card p-4 rounded-lg border border-border flex items-center justify-between">
-          <div>
-            <p className="text-muted-foreground text-sm">Eficiencia</p>
-            <p className="text-info text-2xl font-bold">87%</p>
-          </div>
-          <Activity className="text-info h-8 w-8" />
-        </div>
-      </div>
-
       {/* Active Alarms */}
       <div className="bg-card rounded-xl border border-border overflow-hidden">
         <div className="bg-muted/50 p-4 border-b border-border flex justify-between items-center">
