@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import TopMenu from '@/components/dashboard/TopMenu';
+import BottomMenu from '@/components/dashboard/BottomMenu';
 import DashboardView from '@/components/dashboard/DashboardView';
 import HistoryView from '@/components/dashboard/HistoryView';
 import { generateActiveAlarms, generateHistoryLog } from '@/data/mockData';
@@ -45,10 +46,10 @@ const Index = () => {
   };
 
   return (
-    <div className="bg-background min-h-screen text-foreground font-sans flex flex-col overflow-hidden">
+    <div className="bg-background min-h-screen text-foreground font-sans flex flex-col">
       <TopMenu />
 
-      <main className="flex-1 p-6 overflow-hidden flex flex-col">
+      <main className="flex-1 p-6 overflow-y-auto flex flex-col">
         {/* Tab Buttons */}
         <div className="grid grid-cols-2 gap-4 mb-6">
           <button
@@ -83,13 +84,15 @@ const Index = () => {
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1">
           {activeTab === 'alarms' && (
             <DashboardView activeAlarms={activeAlarms} onAcknowledge={handleAcknowledge} />
           )}
           {activeTab === 'history' && <HistoryView historyLog={historyLog} />}
         </div>
       </main>
+
+      <BottomMenu />
     </div>
   );
 };
