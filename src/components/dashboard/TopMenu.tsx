@@ -8,7 +8,7 @@ export default function TopMenu() {
           <button className="text-foreground hover:text-primary transition-colors">
             <Menu className="h-5 w-5" />
           </button>
-          <span className="text-foreground font-semibold">optimum.oco</span>
+          <span className="text-foreground font-semibold">optimum.O&G</span>
           <span className="text-foreground/80 font-medium">JBN902</span>
         </div>
 

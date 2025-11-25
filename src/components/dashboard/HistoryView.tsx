@@ -60,7 +60,7 @@ export default function HistoryView({ historyLog }: HistoryViewProps) {
           />
         </div>
 
-        <Select value={selectedType} onValueChange={(value) => setSelectedType(value as any)}>
+        <Select value={selectedType} onValueChange={(value) => setSelectedType(value as 'ALL' | EventType)}>
           <SelectTrigger className="w-[180px] bg-background min-h-[48px]">
             <Filter className="h-4 w-4 mr-2" />
             <SelectValue placeholder="Tipo" />
@@ -72,7 +72,7 @@ export default function HistoryView({ historyLog }: HistoryViewProps) {
           </SelectContent>
         </Select>
 
-        <Select value={selectedSeverity} onValueChange={(value) => setSelectedSeverity(value as any)}>
+        <Select value={selectedSeverity} onValueChange={(value) => setSelectedSeverity(value as 'ALL' | AlarmSeverity)}>
           <SelectTrigger className="w-[180px] bg-background min-h-[48px]">
             <SelectValue placeholder="Severidad" />
           </SelectTrigger>
@@ -86,9 +86,9 @@ export default function HistoryView({ historyLog }: HistoryViewProps) {
       </div>
 
       {/* History Table */}
-      <div className="overflow-auto flex-1 p-2">
+      <div className="overflow-auto flex-1">
         <table className="w-full text-left border-collapse">
-          <thead className="bg-muted/50 text-muted-foreground text-xs uppercase sticky top-0">
+          <thead className="bg-muted text-muted-foreground text-xs uppercase sticky top-0 z-10">
             <tr>
               <th className="p-3 font-medium">Fecha/Hora</th>
               <th className="p-3 font-medium">Nivel</th>

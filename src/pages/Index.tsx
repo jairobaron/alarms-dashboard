@@ -46,12 +46,12 @@ const Index = () => {
   };
 
   return (
-    <div className="bg-background min-h-screen text-foreground font-sans flex flex-col">
+    <div className="bg-background h-screen text-foreground font-sans flex flex-col overflow-hidden">
       <TopMenu />
 
-      <main className="flex-1 p-6 overflow-y-auto flex flex-col">
+      <main className="flex-1 p-6 flex flex-col overflow-hidden">
         {/* Tab Buttons */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-2 gap-4 mb-6 flex-shrink-0">
           <button
             onClick={() => setActiveTab('alarms')}
             className={cn(
@@ -84,9 +84,11 @@ const Index = () => {
           </button>
         </div>
 
-        <div className="flex-1">
+        <div className="flex-1 min-h-0">
           {activeTab === 'alarms' && (
-            <DashboardView activeAlarms={activeAlarms} onAcknowledge={handleAcknowledge} />
+            <div className="h-full overflow-y-auto pr-2">
+              <DashboardView activeAlarms={activeAlarms} onAcknowledge={handleAcknowledge} />
+            </div>
           )}
           {activeTab === 'history' && <HistoryView historyLog={historyLog} />}
         </div>
