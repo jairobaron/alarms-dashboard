@@ -46,7 +46,7 @@ const Index = () => {
 
   return (
     <div className="bg-background min-h-screen text-foreground font-sans flex flex-col overflow-hidden">
-      <TopMenu currentTime={currentTime} />
+      <TopMenu />
 
       <main className="flex-1 p-6 overflow-hidden flex flex-col">
         {/* Tab Buttons */}
