@@ -1,11 +1,7 @@
-import { Home, Settings, BarChart3, TrendingUp, Activity } from 'lucide-react';
+import { Home, Settings, BarChart3, TrendingUp, Activity, Menu, RefreshCw, Sun, Bell } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface TopMenuProps {
-  currentTime: Date;
-}
-
-export default function TopMenu({ currentTime }: TopMenuProps) {
+export default function TopMenu() {
   const menuItems = [
     { icon: Home, label: 'Home' },
     { icon: Settings, label: 'Settings' },
@@ -15,29 +11,52 @@ export default function TopMenu({ currentTime }: TopMenuProps) {
   ];
 
   return (
-    <div className="bg-card border-b border-border px-6 py-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-6">
+    <div className="flex flex-col">
+      {/* Barra Superior */}
+      <div className="bg-[hsl(220,30%,10%)] border-b border-border px-4 py-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button className="text-foreground hover:text-primary transition-colors">
+              <Menu className="h-5 w-5" />
+            </button>
+            <span className="text-foreground font-semibold">optimum.oco</span>
+            <span className="text-foreground/80 font-medium">JBN902</span>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <button className="text-foreground hover:text-primary transition-colors">
+              <RefreshCw className="h-5 w-5" />
+            </button>
+            <button className="text-foreground hover:text-primary transition-colors">
+              <Sun className="h-5 w-5" />
+            </button>
+            <button className="relative text-foreground hover:text-primary transition-colors">
+              <Bell className="h-5 w-5" />
+              <span className="absolute -top-1 -right-1 bg-critical text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                3
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Barra de Navegación */}
+      <div className="bg-[hsl(220,30%,12%)] border-b border-border px-6 py-3">
+        <div className="flex items-center justify-around max-w-5xl mx-auto">
           {menuItems.map((item) => (
             <button
               key={item.label}
               className={cn(
-                "flex flex-col items-center justify-center gap-1 px-4 py-2 rounded-lg transition-all min-w-[64px] min-h-[56px]",
+                "flex items-center gap-2 px-6 py-2 rounded transition-all min-h-[48px]",
                 item.active
-                  ? "bg-primary/20 text-primary"
-                  : "text-muted-foreground hover:bg-muted/50"
+                  ? "text-[hsl(210,100%,60%)]"
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <item.icon className="h-6 w-6" />
-              <span className="text-xs font-medium">{item.label}</span>
+              <item.icon className="h-5 w-5" />
+              <span className="text-sm font-medium">{item.label}</span>
             </button>
           ))}
-        </div>
-
-        <div className="text-right">
-          <p className="text-2xl font-mono text-primary font-bold">
-            {currentTime.toLocaleTimeString('es-ES')}
-          </p>
         </div>
       </div>
     </div>
