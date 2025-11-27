@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Search, Filter } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Search, Filter, Calendar as CalendarIcon } from 'lucide-react';
 import { HistoryItem, RecordType, AlarmSeverity } from '@/types/alarm';
 import { Input } from '@/components/ui/input';
 import {
@@ -10,6 +10,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { format, subDays, parseISO, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
 
 interface HistoryViewProps {
   historyLog: HistoryItem[];
@@ -19,18 +25,49 @@ export default function HistoryView({ historyLog }: HistoryViewProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<'ALL' | RecordType>('ALL');
   const [selectedSeverity, setSelectedSeverity] = useState<'ALL' | AlarmSeverity>('ALL');
+  
+  // Initialize date range to last 7 days
+  const [dateFrom, setDateFrom] = useState<Date | undefined>(startOfDay(subDays(new Date(), 7)));
+  const [dateTo, setDateTo] = useState<Date | undefined>(endOfDay(new Date()));
 
-  const filteredHistory = historyLog.filter((item) => {
-    const matchesSearch =
-      searchTerm === '' ||
-      item.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.tag.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesType = selectedType === 'ALL' || item.type === selectedType;
-    const matchesSeverity = selectedSeverity === 'ALL' || item.severity === selectedSeverity;
+  const filteredHistory = useMemo(() => {
+    return historyLog.filter((item) => {
+      const matchesSearch =
+        searchTerm === '' ||
+        item.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.tag.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesType = selectedType === 'ALL' || item.type === selectedType;
+      const matchesSeverity = selectedSeverity === 'ALL' || item.severity === selectedSeverity;
 
-    return matchesSearch && matchesType && matchesSeverity;
-  });
+      // Parse timestamp and check date range
+      let matchesDateRange = true;
+      if (dateFrom || dateTo) {
+        try {
+          // Extract date from timestamp format "DD/MM/YYYY, HH:mm:ss"
+          const [datePart] = item.timestamp.split(', ');
+          const [day, month, year] = datePart.split('/');
+          const itemDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+          
+          if (dateFrom && dateTo) {
+            matchesDateRange = isWithinInterval(itemDate, { start: dateFrom, end: dateTo });
+          } else if (dateFrom) {
+            matchesDateRange = itemDate >= dateFrom;
+          } else if (dateTo) {
+            matchesDateRange = itemDate <= dateTo;
+          }
+        } catch (error) {
+          matchesDateRange = true; // If parsing fails, include the item
+        }
+      }
+
+      return matchesSearch && matchesType && matchesSeverity && matchesDateRange;
+    });
+  }, [historyLog, searchTerm, selectedType, selectedSeverity, dateFrom, dateTo]);
+
+  // Count alarms and events
+  const alarmCount = filteredHistory.filter(item => item.type === 'ALARM').length;
+  const eventCount = filteredHistory.filter(item => item.type === 'EVENT').length;
 
   const getSeverityStyles = (severity: AlarmSeverity) => {
     switch (severity) {
@@ -48,7 +85,9 @@ export default function HistoryView({ historyLog }: HistoryViewProps) {
   return (
     <div className="bg-card rounded-xl border border-border h-full flex flex-col">
       {/* Filter Bar */}
-      <div className="p-4 border-b border-border flex gap-4 items-center bg-muted/30">
+      <div className="p-4 border-b border-border space-y-4 bg-muted/30">
+        {/* First Row - Search and Filters */}
+        <div className="flex gap-4 items-center">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
@@ -83,6 +122,71 @@ export default function HistoryView({ historyLog }: HistoryViewProps) {
             <SelectItem value="INFO">Informativos</SelectItem>
           </SelectContent>
         </Select>
+        </div>
+
+        {/* Second Row - Date Range and Count */}
+        <div className="flex gap-4 items-center justify-between">
+          <div className="flex gap-2 items-center">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "min-h-[48px] justify-start text-left font-normal bg-background",
+                    !dateFrom && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {dateFrom ? format(dateFrom, "PPP", { locale: es }) : "Desde"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={dateFrom}
+                  onSelect={setDateFrom}
+                  initialFocus
+                  className="pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "min-h-[48px] justify-start text-left font-normal bg-background",
+                    !dateTo && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {dateTo ? format(dateTo, "PPP", { locale: es }) : "Hasta"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={dateTo}
+                  onSelect={setDateTo}
+                  initialFocus
+                  className="pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <div className="flex gap-4 text-sm font-medium">
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground">Alarmas:</span>
+              <Badge variant="secondary" className="min-h-[32px] px-3">{alarmCount}</Badge>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground">Eventos:</span>
+              <Badge variant="secondary" className="min-h-[32px] px-3">{eventCount}</Badge>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* History Table */}
