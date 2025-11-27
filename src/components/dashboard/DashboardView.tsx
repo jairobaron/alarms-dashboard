@@ -44,12 +44,12 @@ export default function DashboardView({ activeAlarms, onAcknowledge }: Dashboard
                     <h4 className="font-bold text-foreground text-lg">{alarm.message}</h4>
                     <div className="flex gap-4 text-sm text-muted-foreground mt-1">
                       <span>Tag: {alarm.tag}</span>
-                      {alarm.value && (
-                        <span>
-                          Valor: <span className="text-foreground">{alarm.value}</span>
-                        </span>
-                      )}
                       <span>Hora: {alarm.timestamp}</span>
+                      <span className={`font-medium ${
+                        alarm.severity === 'CRITICAL' ? 'text-critical' : 'text-warning'
+                      }`}>
+                        Estado: {alarm.status}
+                      </span>
                     </div>
                   </div>
                 </div>

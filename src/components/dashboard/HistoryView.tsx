@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Search, Filter } from 'lucide-react';
-import { HistoryItem, EventType, AlarmSeverity } from '@/types/alarm';
+import { HistoryItem, RecordType, AlarmSeverity } from '@/types/alarm';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -17,7 +17,7 @@ interface HistoryViewProps {
 
 export default function HistoryView({ historyLog }: HistoryViewProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedType, setSelectedType] = useState<'ALL' | EventType>('ALL');
+  const [selectedType, setSelectedType] = useState<'ALL' | RecordType>('ALL');
   const [selectedSeverity, setSelectedSeverity] = useState<'ALL' | AlarmSeverity>('ALL');
 
   const filteredHistory = historyLog.filter((item) => {
@@ -60,7 +60,7 @@ export default function HistoryView({ historyLog }: HistoryViewProps) {
           />
         </div>
 
-        <Select value={selectedType} onValueChange={(value) => setSelectedType(value as 'ALL' | EventType)}>
+        <Select value={selectedType} onValueChange={(value) => setSelectedType(value as 'ALL' | RecordType)}>
           <SelectTrigger className="w-[180px] bg-background min-h-[48px]">
             <Filter className="h-4 w-4 mr-2" />
             <SelectValue placeholder="Tipo" />
@@ -120,7 +120,16 @@ export default function HistoryView({ historyLog }: HistoryViewProps) {
                     {item.message}
                     <span className="text-muted-foreground text-xs block">{item.tag}</span>
                   </td>
-                  <td className="p-3 text-right text-muted-foreground">{item.status}</td>
+                  <td className="p-3 text-right">
+                    <span className={`text-xs font-medium px-2 py-1 rounded ${
+                      item.status === 'ACT' ? 'bg-critical/20 text-critical' :
+                      item.status === 'RTN' ? 'bg-success/20 text-success' :
+                      item.status === 'ACK' ? 'bg-info/20 text-info' :
+                      'bg-muted text-muted-foreground'
+                    }`}>
+                      {item.status}
+                    </span>
+                  </td>
                 </tr>
               ))
             )}

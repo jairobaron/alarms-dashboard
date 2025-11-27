@@ -1,25 +1,31 @@
-export type AlarmSeverity = 'CRITICAL' | 'HIGH' | 'WARNING' | 'LOW' | 'INFO';
-export type AlarmStatus = 'ACTIVE' | 'ACKNOWLEDGED' | 'CLEARED';
-export type EventType = 'ALARM' | 'EVENT';
+export type AlarmSeverity = 'CRITICAL' | 'WARNING' | 'INFO';
+export type AlarmLevel = 'HH' | 'H' | 'L' | 'LL';
+export type AlarmStatus = 'ACT' | 'RTN' | 'ACK';
+export type EventStatus = 'ACT' | 'RTN' | 'LOG';
+export type RecordType = 'ALARM' | 'EVENT';
 
 export interface Alarm {
   id: number;
   timestamp: string;
   severity: AlarmSeverity;
+  level: AlarmLevel;
   tag: string;
+  description: string;
   message: string;
-  value?: string;
+  currentValue: number;
+  limitValue: number;
+  unit: string;
   status: AlarmStatus;
 }
 
 export interface HistoryItem {
   id: number;
   timestamp: string;
-  type: EventType;
+  type: RecordType;
   severity: AlarmSeverity;
   tag: string;
   message: string;
-  status: string;
+  status: AlarmStatus | EventStatus;
 }
 
 export interface SensorVariable {
